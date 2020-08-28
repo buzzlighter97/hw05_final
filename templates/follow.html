@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% load cache %}
+{% cache 20 index_page %}
+ 
+    {% block title %} Лента новостей {% endblock %}
+
+    {% block content %}
+        {% load thumbnail %}
+
+        {% include "menu.html" %}
+
+        <h1> Посты авторов, на которых вы подписаны </h1>
+
+        {% for post in page %}
+            {% include "post_item.html" with post=post %}
+        {% endfor %}
+
+        {% if page.has_other_pages %}
+            {% include "paginator.html" with items=page paginator=paginator %}
+        {% endif %}
+    {% endblock %}
+
+{% endcache %}

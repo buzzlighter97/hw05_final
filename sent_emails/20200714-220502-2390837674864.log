@@ -1,0 +1,26 @@
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: 
+ =?utf-8?b?0KHQsdGA0L7RgSDQv9Cw0YDQvtC70Y8g0L3QsCBsb2NhbGhvc3Q6ODAwMA==?=
+From: webmaster@localhost
+To: buzzlighter97@gmail.com
+Date: Tue, 14 Jul 2020 19:05:02 -0000
+Message-ID: <159475350257.10052.4334179239870289794@DESKTOP-NLMH993>
+
+
+Вы получили это письмо, потому что вы (или кто-то другой) запросили восстановление пароля от учётной записи на сайте localhost:8000, которая связана с этим адресом электронной почты.
+
+Пожалуйста, перейдите на эту страницу и введите новый пароль:
+
+http://localhost:8000/auth/reset/NA/5i6-62078769a6d2017c61a7/
+
+Ваше имя пользователя (на случай, если вы его забыли): buzzlighter
+
+Спасибо, что используете наш сайт!
+
+Команда сайта localhost:8000
+
+
+
+-------------------------------------------------------------------------------
