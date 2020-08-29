@@ -56,9 +56,10 @@ def profile(request, username):
     page_number = request.GET.get("page")
     page = paginator.get_page(page_number)
 
-    following = False
-    if request.user.__class__.__name__ != "AnonymousUser":
-        following = Follow.objects.filter(author=author, user=request.user).exists()
+    following = (
+        request.user.is_authenticated
+        and Follow.objects.filter(author=author, user=request.user).exists()
+    )
 
     posts_count = len(post_list)
     followers_count = Follow.objects.filter(author=author).count
@@ -106,7 +107,7 @@ def post_edit(request, username, post_id):
 
     post = get_object_or_404(Post, pk=post_id, author__username=username)
     if request.user != post.author:
-        return redirect("/auth/")
+        return redirect("post", username=username, post_id=post_id)
     form = PostForm(request.POST or None, files=request.FILES or None, instance=post)
     if not form.is_valid():
         form_title = "Редактировать запись"
@@ -123,7 +124,7 @@ def post_edit(request, username, post_id):
     post.group = form.cleaned_data["group"]
     post.text = form.cleaned_data["text"]
     post.save()
-    return redirect("post_edit", username=post.author.username, post_id=post.pk)
+    return redirect("post", username=post.author.username, post_id=post.pk)
 
 
 def page_not_found(request, exception):

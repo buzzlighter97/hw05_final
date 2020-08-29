@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from .models import Post, User, Group, Follow, Comment
 from django.urls import reverse
 import time
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 
 class TestsOfFifthSprint(TestCase):
@@ -28,14 +29,22 @@ class TestsOfFifthSprint(TestCase):
         )
 
     def test_img_in_post(self):
-        '''Tests that the added image
-        is in the post'''
+        """Tests that the added image
+        is in the post"""
 
-        with open("media/original.jpg", "rb") as img:
-            response_new = self.authorised_client.post(
-                reverse("new_post"),
-                {"text": "test text", "group": self.test_group_1.id, "image": img},
-            )
+        small_gif = (
+            b"\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x00\x00\x00\x21\xf9\x04"
+            b"\x01\x0a\x00\x01\x00\x2c\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02"
+            b"\x02\x4c\x01\x00\x3b"
+        )
+
+        img = SimpleUploadedFile(
+            name="some.gif", content=small_gif, content_type="image/gif"
+        )
+        response_new = self.authorised_client.post(
+            reverse("new_post"),
+            {"text": "test text", "group": self.test_group_1.id, "image": img},
+        )
         test_post = Post.objects.all().first()
         response_post = self.authorised_client.get(
             reverse(
@@ -43,18 +52,25 @@ class TestsOfFifthSprint(TestCase):
                 kwargs={"username": test_post.author.username, "post_id": test_post.id},
             )
         )
-
         self.assertContains(response_post, "img")
 
     def test_img_in_profile_and_group(self):
-        '''Tests that added image of the post is
-        visible on the profile and on the group pages'''
+        """Tests that added image of the post is
+        visible on the profile and on the group pages"""
 
-        with open("media/original.jpg", "rb") as img:
-            response_new = self.authorised_client.post(
-                reverse("new_post"),
-                {"text": "test text", "group": self.test_group_1.id, "image": img},
-            )
+        small_gif = (
+            b"\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x00\x00\x00\x21\xf9\x04"
+            b"\x01\x0a\x00\x01\x00\x2c\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02"
+            b"\x02\x4c\x01\x00\x3b"
+        )
+
+        img = SimpleUploadedFile(
+            name="some.gif", content=small_gif, content_type="image/gif"
+        )
+        response_new = self.authorised_client.post(
+            reverse("new_post"),
+            {"text": "test text", "group": self.test_group_1.id, "image": img},
+        )
         test_post = Post.objects.all().first()
         response_profile = self.authorised_client.get(
             reverse("profile", kwargs={"username": test_post.author.username})
@@ -67,15 +83,17 @@ class TestsOfFifthSprint(TestCase):
         self.assertContains(response_group, "img")
 
     def test_file_is_image(self):
-        '''Tests that added file is an image file'''
+        """Tests that added file is an image file"""
 
-        with open("media/123.txt", "rb") as img:
-            response_new = self.authorised_client.post(
-                reverse("new_post"),
-                {"text": "test text", "group": self.test_group_1.id, "image": img},
-            )
-
-        self.assertFormError(response_new, "form", "image", ["Отправленный файл пуст."])
+        img = SimpleUploadedFile(
+            name="some.txt", content=b"abc", content_type="text/plane"
+        )
+        response_new = self.authorised_client.post(
+            reverse("new_post"),
+            {"text": "test text", "group": self.test_group_1.id, "image": img},
+        )
+        text = "Загрузите правильное изображение. Файл, который вы загрузили, поврежден или не является изображением."
+        self.assertFormError(response_new, "form", "image", [text])
 
     def test_cache(self):
         '''Tests that cache is saving
@@ -83,9 +101,9 @@ class TestsOfFifthSprint(TestCase):
 
         response_index = self.authorised_client.get(reverse('index'))
         response_new = self.authorised_client.post(
-                reverse("new_post"),
-                {"text": "test text 1", "group": self.test_group_1.id},
-            )
+            reverse("new_post"),
+            {"text": "test text 1", "group": self.test_group_1.id},
+        )
         self.assertNotContains(response_index, 'test text')
 
         time.sleep(20)
@@ -94,9 +112,9 @@ class TestsOfFifthSprint(TestCase):
         self.assertContains(response_index, 'test text')
 
     def test_auth_follow(self):
-        '''Tests that the authorised user
+        """Tests that the authorised user
         is able to follow and unfollow
-        another user'''
+        another user"""
 
         response_follow = self.authorised_client.get(
             reverse("profile_follow", kwargs={"username": "non_authorised_user"})
@@ -115,10 +133,10 @@ class TestsOfFifthSprint(TestCase):
         self.assertFalse(following)
 
     def new_post_follow_visible(self):
-        '''Tests that the new post
+        """Tests that the new post
         is visible on the follow pages of followers
         and is not visible on the follow pages of 
-        non-followers'''
+        non-followers"""
 
         another_auth_client = Client()
         another_auth_user = User.objects.create(username="another_auth_user")
@@ -140,9 +158,9 @@ class TestsOfFifthSprint(TestCase):
         self.assertNotContains(not_follow_response, "test text auth")
 
     def auth_comment(self):
-        '''Tests that the authorised user
+        """Tests that the authorised user
         is able to add a comment and unauthorised
-        is not'''
+        is not"""
 
         test_post = Post.objects.create(text="test text", author=self.authorised_user)
         auth_comment = self.authorised_client.post(

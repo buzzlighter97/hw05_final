@@ -7,16 +7,16 @@
     {% block content %}
         {% load thumbnail %}
 
-        {% include "menu.html" %}
+        {% include "includes/menu.html" %}
 
         <h1> Последние обновления на сайте</h1>
 
         {% for post in page %}
-            {% include "post_item.html" with post=post %}
+            {% include "includes/post_item.html" with post=post %}
         {% endfor %}
 
         {% if page.has_other_pages %}
-            {% include "paginator.html" with items=page paginator=paginator %}
+            {% include "includes/paginator.html" with items=page paginator=paginator %}
         {% endif %}
     {% endblock %}
 

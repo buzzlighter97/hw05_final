@@ -5,22 +5,25 @@ from django.conf.urls import handler404, handler500
 from django.conf import settings
 from django.conf.urls.static import static
 
-handler404 = "posts.views.page_not_found" 
+
+handler404 = "posts.views.page_not_found"
 handler500 = "posts.views.server_error"
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path('about/', include('django.contrib.flatpages.urls')),
-    path("auth/", include("users.urls")),
-    path("auth/", include("django.contrib.auth.urls")),
+    path("about/", include("django.contrib.flatpages.urls")),
+    path("auth/", include("users.urls"), name="auth"),
+    path("auth/", include("django.contrib.auth.urls"), name="auth"),
     path("", include("posts.urls")),
 ]
 
 urlpatterns += [
-        path('about-us/', views.flatpage, {'url': '/about-us/'}, name='about'),
-        path('terms/', views.flatpage, {'url': '/terms/'}, name='terms'),
-        path('about-author/', views.flatpage, {'url': '/about-author/'}, name='about-author'),
-        path('about-spec/', views.flatpage, {'url': '/about-spec/'}, name='about-spec')
+    path("about-us/", views.flatpage, {"url": "/about-us/"}, name="about"),
+    path("terms/", views.flatpage, {"url": "/terms/"}, name="terms"),
+    path(
+        "about-author/", views.flatpage, {"url": "/about-author/"}, name="about-author"
+    ),
+    path("about-spec/", views.flatpage, {"url": "/about-spec/"}, name="about-spec"),
 ]
 
 if settings.DEBUG:
